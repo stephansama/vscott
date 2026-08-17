@@ -1,0 +1,123 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatRangeWithTenure, spanOf } from "../../lib/dates";
+import Card from "../Card.astro";
+import Pill from "../Pill.astro";
+
+interface Props {
+  entries: CollectionEntry<"experience">[];
+}
+
+const { entries } = Astro.props;
+---
+
+{
+  /*
+    Two card shapes, chosen by `roles.length` (prototype lines 121–204):
+
+    - Multi-role employers lead with the org, then the combined span, then a
+      timeline rail with one dot per role (UWM).
+    - Single-role employers lead with the role title, then the org (Detroit
+      Labs, Perficient, Grand Circus, Cellular Sales).
+
+    Adding a promotion to a content file moves an employer from one shape to
+    the other with no change here.
+  */
+}
+<div class="flex flex-col gap-8">
+  {
+    entries.map((entry) => {
+      const { org, location, employmentType, roles, summary } = entry.data;
+      const multi = roles.length > 1;
+      const span = spanOf(roles);
+      const lead = roles[0]!;
+
+      return (
+        <Card class="flex flex-col gap-5">
+          {multi ? (
+            <div class="flex flex-col gap-1">
+              <div class="text-lg font-semibold">{org}</div>
+              {employmentType && (
+                <div class="text-ink-3 font-mono text-xs tracking-[0.08em] uppercase">
+                  {employmentType}
+                  {location && ` · ${location}`}
+                </div>
+              )}
+              <div class="tabular text-ink-3 font-mono text-[13px]">
+                {formatRangeWithTenure(span.start, span.end)}
+              </div>
+            </div>
+          ) : (
+            <div class="flex flex-col gap-2">
+              <div class="text-lg font-semibold">{lead.title}</div>
+              <div class="text-ink-2">{org}</div>
+              <div class="tabular text-ink-3 font-mono text-[13px]">
+                {formatRangeWithTenure(lead.start, lead.end)}
+              </div>
+              {location && (
+                <div class="text-ink-3 font-mono text-xs tracking-[0.08em] uppercase">
+                  {location}
+                </div>
+              )}
+            </div>
+          )}
+
+          {summary && <p class="text-ink-2 m-0 text-[15px]">{summary}</p>}
+
+          {multi ? (
+            <div class="border-line ml-1 flex flex-col gap-6 border-l pl-6">
+              {roles.map((role) => (
+                <div class="relative flex flex-col gap-2">
+                  <span
+                    aria-hidden="true"
+                    class:list={[
+                      "border-card absolute top-[7px] -left-[29px] size-[9px] rounded-full border-2",
+                      // Current role marked in pass green, prior roles faded.
+                      // `end === null` is the only signal needed.
+                      role.end === null ? "bg-pass" : "bg-ink-4",
+                    ]}
+                  />
+                  <div class="text-lg font-semibold">{role.title}</div>
+                  <div class="tabular text-ink-3 font-mono text-[13px]">
+                    {formatRangeWithTenure(role.start, role.end)}
+                  </div>
+                  {role.highlights.length > 0 && (
+                    <ul class="text-ink-2 mt-1 mb-0 flex list-disc flex-col gap-1.5 pl-[18px] text-[15px]">
+                      {role.highlights.map((highlight) => (
+                        <li>{highlight}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {role.skills.length > 0 && (
+                    <div class="mt-1.5 flex flex-wrap gap-2">
+                      {role.skills.map((skill) => (
+                        <Pill>{skill}</Pill>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {lead.highlights.length > 0 && (
+                <ul class="text-ink-2 m-0 flex list-disc flex-col gap-1.5 pl-[18px] text-[15px]">
+                  {lead.highlights.map((highlight) => (
+                    <li>{highlight}</li>
+                  ))}
+                </ul>
+              )}
+              {lead.skills.length > 0 && (
+                <div class="flex flex-wrap gap-2">
+                  {lead.skills.map((skill) => (
+                    <Pill>{skill}</Pill>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </Card>
+      );
+    })
+  }
+</div>

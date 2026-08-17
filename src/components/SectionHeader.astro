@@ -1,0 +1,17 @@
+---
+interface Props {
+  title: string;
+  /** Mono eyebrow number ("01"). Omitted renders the bare em-dash variant. */
+  number?: string;
+}
+
+const { title, number } = Astro.props;
+---
+
+<div class="flex items-center gap-3">
+  <span class="text-ink-4 font-mono text-sm"
+    >{number ? `${number} —` : "—"}</span
+  >
+  <h2 class="m-0 text-[28px] font-semibold tracking-[-0.02em]">{title}</h2>
+  <span aria-hidden="true" class="bg-line h-px flex-1"></span>
+</div>

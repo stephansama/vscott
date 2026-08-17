@@ -1,0 +1,11 @@
+allowBuilds:
+  esbuild: true
+  sharp: true
+
+patchedDependencies:
+  "@stephansama/astro-iconify-svgmap@1.0.16": patches/@stephansama__astro-iconify-svgmap@1.0.16.patch
+
+overrides:
+  # Astro 6.4.8 pins sharp 0.34.5, which has no prebuilt binary for Node 24 and
+  # falls back to a node-gyp source build that fails. 0.35.3 ships the prebuild.
+  sharp: ^0.35.3

@@ -1,0 +1,23 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+
+interface Props {
+  entry: CollectionEntry<"sections">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+{
+  /*
+    Prose sections (About, Community, Contact) render their markdown body.
+    The first paragraph carries full ink; the rest step back to ink-2, which
+    is how the prototype weighted its About copy (lines 109–111).
+  */
+}
+<div
+  class="[&>p]:text-ink-2 [&>p:first-child]:text-ink flex max-w-[68ch] flex-col gap-6 [&>p]:m-0"
+>
+  <Content />
+</div>

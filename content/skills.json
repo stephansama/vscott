@@ -1,0 +1,25 @@
+[
+  {
+    "id": "skills",
+    "featured": [
+      "Test Automation",
+      "Performance Testing",
+      "Scrum",
+      "API Testing",
+      "Organizational Leadership"
+    ],
+    "additional": [
+      "Quality Assurance",
+      "Manual Testing",
+      "Test Cases",
+      "CI/CD",
+      "REST APIs",
+      "Microservices",
+      "Web Development",
+      "Testing Strategy",
+      "DevOps",
+      "Object-Oriented Programming (OOP)",
+      "Site Reliability Engineering (SRE)"
+    ]
+  }
+]

@@ -1,0 +1,46 @@
+---
+import SectionHeader from "./SectionHeader.astro";
+
+interface Props {
+  id: string;
+  title: string;
+  number?: string;
+  label: string;
+  /**
+   * Recommendations run their card grid past the 760px reading column while
+   * keeping the header aligned to it (prototype lines 289–295).
+   */
+  wide?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  number,
+  label,
+  wide = false,
+  class: className = "",
+} = Astro.props;
+---
+
+<section
+  id={id}
+  aria-label={label}
+  class:list={[
+    "flex flex-col gap-6 pb-[88px]",
+    wide ? "" : "max-w-[760px]",
+    className,
+  ]}
+>
+  {
+    wide ? (
+      <div class="max-w-[760px]">
+        <SectionHeader title={title} number={number} />
+      </div>
+    ) : (
+      <SectionHeader title={title} number={number} />
+    )
+  }
+  <slot />
+</section>

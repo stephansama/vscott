@@ -1,0 +1,27 @@
+---
+const options = ["dark", "light", "auto"] as const;
+---
+
+<div
+  role="group"
+  aria-label="Theme"
+  class="border-line-strong flex overflow-hidden rounded-[10px] border"
+>
+  {
+    options.map((option) => (
+      <button
+        type="button"
+        data-theme-option={option}
+        aria-pressed="false"
+        class="text-ink-3 hover:text-ink h-8 cursor-pointer border-none bg-transparent px-3 font-mono text-xs tracking-[0.02em] capitalize"
+      >
+        {option}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  import { initTheme } from "../scripts/theme";
+  initTheme();
+</script>

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "profile",
+    "name": "Vernon Scott II",
+    "shortName": "Vernon",
+    "role": "Software Quality Engineer",
+    "tagline": "Software Quality Engineer building API test automation and reliability practice in Detroit.",
+    "location": "Detroit, MI",
+    "available": false,
+    "availabilityNote": "Available for Quality Engineering & SRE roles · Detroit, MI · Remote or hybrid",
+    "portrait": "../src/assets/vernon-scott.png",
+    "portraitAlt": "Vernon Scott II",
+    "portraitIsPlaceholder": true,
+    "linkedin": "https://linkedin.com/in/vtscott",
+    "seo": {
+      "title": "Vernon Scott II — Software Quality Engineer",
+      "description": "Software Quality Engineer in Detroit building API test automation, testing strategy, and reliability practice. ISTQB Certified Tester, Google SRE trained."
+    }
+  }
+]

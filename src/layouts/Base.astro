@@ -1,0 +1,90 @@
+---
+import "@fontsource-variable/geist";
+import "@fontsource-variable/geist-mono";
+// Priming import: loading this virtual module populates the icon sprite
+// collections the dev middleware serves at /{pack}.svg. Build reads them
+// separately at astro:build:done.
+import "virtual:iconify-svgmap";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  /** JSON-LD payload, serialized into a script tag in <head>. */
+  schema?: Record<string, unknown>;
+}
+
+const { title, description, schema } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    {/* Matches --bg for each theme so the browser chrome doesn't flash. */}
+    <meta
+      name="theme-color"
+      content="#0B0F0D"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#F6F7F5"
+      media="(prefers-color-scheme: light)"
+    />
+
+    {
+      schema && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(schema)}
+        />
+      )
+    }
+
+    {
+      /*
+      No-flash theme. Runs before first paint and resolves the stored
+      preference — "auto" defers to the OS. Ported from the prototype's
+      inline IIFE (lines 16–23); the storage key is kept as `vts:theme`.
+    */
+    }
+    <script is:inline>
+      (function () {
+        try {
+          const stored = localStorage.getItem("vts:theme");
+          const dark =
+            stored === "dark"
+              ? true
+              : stored === "light"
+                ? false
+                : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.dataset.theme = dark ? "dark" : "light";
+        } catch {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

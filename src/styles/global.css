@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens — ported verbatim from the Design Compiler prototype
+   ("Vernon Scott Portfolio.dc.html" lines 26–45).
+
+   The pass/warn/fail triad is deliberate and load-bearing: Vernon is a Quality
+   Engineer, so the palette speaks in test-result semantics. PASS badges on live
+   credentials, warn on expired ones, and the pulsing green availability dot all
+   read from these. This is why the project keeps the prototype's colors rather
+   than defaulting to Catppuccin.
+
+   Dark is the default; [data-theme="light"] overrides. @theme inline maps the
+   semantic vars onto Tailwind utilities (bg-bg, text-ink, border-line, …).
+--------------------------------------------------------------------------- */
+:root {
+  --pass: #2fd07b;
+  --pass-press: #23b369;
+  --pass-ink: #04180d;
+  --pass-wash: color-mix(in oklab, #2fd07b 12%, transparent);
+  --warn: #e8b23a;
+  --warn-wash: color-mix(in oklab, #e8b23a 12%, transparent);
+  --fail: #f0605c;
+
+  --bg: #0b0f0d;
+  --bg-elev: #111714;
+  --card: #141a17;
+  --card-2: #1b2320;
+
+  --line: rgba(231, 240, 234, 0.08);
+  --line-strong: rgba(231, 240, 234, 0.15);
+
+  --ink: #e7f0ea;
+  --ink-2: #bfccc4;
+  --ink-3: #8a9992;
+  --ink-4: #5b6863;
+
+  --shadow-1:
+    0 1px 0 rgba(231, 240, 234, 0.03) inset, 0 1px 2px rgba(0, 0, 0, 0.45);
+
+  --sans:
+    "Geist Variable", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    system-ui, sans-serif;
+  --mono: "Geist Mono Variable", ui-monospace, Menlo, monospace;
+}
+
+:root[data-theme="light"] {
+  --pass: #16a75c;
+  --pass-press: #118a4b;
+  --pass-ink: #ffffff;
+  --pass-wash: color-mix(in oklab, #16a75c 12%, transparent);
+  --warn: #a9770c;
+  --warn-wash: color-mix(in oklab, #a9770c 12%, transparent);
+  --fail: #c4302c;
+
+  --bg: #f6f7f5;
+  --bg-elev: #ffffff;
+  --card: #ffffff;
+  --card-2: #ecefea;
+
+  --line: rgba(11, 15, 13, 0.09);
+  --line-strong: rgba(11, 15, 13, 0.16);
+
+  --ink: #0b0f0d;
+  --ink-2: #313b36;
+  --ink-3: #64716b;
+  --ink-4: #94a09a;
+
+  --shadow-1:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 1px 2px rgba(11, 15, 13, 0.06);
+}
+
+@theme inline {
+  --color-pass: var(--pass);
+  --color-pass-press: var(--pass-press);
+  --color-pass-ink: var(--pass-ink);
+  --color-pass-wash: var(--pass-wash);
+  --color-warn: var(--warn);
+  --color-warn-wash: var(--warn-wash);
+  --color-fail: var(--fail);
+
+  --color-bg: var(--bg);
+  --color-bg-elev: var(--bg-elev);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
+
+  --shadow-card: var(--shadow-1);
+}
+
+/* ---------------------------------------------------------------------------
+   Base — inside @layer base so Tailwind utilities still win over element
+   defaults like the anchor color below.
+--------------------------------------------------------------------------- */
+@layer base {
+  html {
+    background: var(--bg);
+    scroll-behavior: smooth;
+    /* Keeps hash-anchor targets clear of the sticky 56px header. */
+    scroll-padding-top: 4.5rem;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: var(--ink);
+  }
+
+  a:hover {
+    color: var(--pass-press);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--pass);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* The hero availability dot. */
+  @keyframes vts-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  .animate-pulse-dot {
+    animation: vts-pulse 2.4s ease-in-out infinite;
+  }
+
+  /* Mono numerals that stay column-aligned across date ranges. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

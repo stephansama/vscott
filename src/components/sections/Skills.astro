@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Pill from "../Pill.astro";
+
+interface Props {
+  skills: CollectionEntry<"skills">["data"];
+}
+
+const { skills } = Astro.props;
+
+// Everything renders server-side; the toggle only flips a class. Without JS
+// the additional skills are still in the DOM and the button is hidden, so no
+// content is lost — that is why the count below is the real total.
+const total = skills.featured.length + skills.additional.length;
+---
+
+<div class="flex flex-wrap gap-2" data-skills-list>
+  {skills.featured.map((skill) => <Pill variant="accent">{skill}</Pill>)}
+  {
+    skills.additional.map((skill) => (
+      <Pill class="data-[collapsed]:hidden" data-skill-extra>
+        {skill}
+      </Pill>
+    ))
+  }
+</div>
+
+<button
+  type="button"
+  data-skills-toggle
+  hidden
+  aria-expanded="true"
+  class="border-line-strong text-ink hover:border-ink-3 h-11 cursor-pointer self-start rounded-[10px] border bg-transparent px-[18px] font-sans text-sm font-medium whitespace-nowrap"
+>
+  Show fewer
+</button>
+
+<script is:inline define:vars={{ total }}>
+  (function () {
+    const toggle = document.querySelector("[data-skills-toggle]");
+    const extras = document.querySelectorAll("[data-skill-extra]");
+    if (!toggle || !extras.length) return;
+
+    // Only reveal the control once JS is confirmed — otherwise the list stays
+    // fully expanded rather than trapping content behind a dead button.
+    toggle.hidden = false;
+
+    function render(collapsed) {
+      extras.forEach(function (pill) {
+        if (collapsed) pill.setAttribute("data-collapsed", "");
+        else pill.removeAttribute("data-collapsed");
+      });
+      toggle.setAttribute("aria-expanded", String(!collapsed));
+      toggle.textContent = collapsed
+        ? "Show all (" + total + ")"
+        : "Show fewer";
+    }
+
+    let collapsed = true;
+    render(collapsed);
+
+    toggle.addEventListener("click", function () {
+      collapsed = !collapsed;
+      render(collapsed);
+    });
+  })();
+</script>

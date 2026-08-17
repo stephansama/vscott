@@ -1,0 +1,95 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { credentialStatus, formatMonth } from "../../lib/dates";
+import Card from "../Card.astro";
+
+interface Props {
+  entries: CollectionEntry<"certifications">[];
+}
+
+const { entries } = Astro.props;
+---
+
+<div
+  class="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4"
+>
+  {
+    entries.map((entry) => {
+      const {
+        name,
+        issuer,
+        issued,
+        expires,
+        credentialId,
+        verifyUrl,
+        note,
+        kind,
+      } = entry.data;
+
+      // Status is computed from `expires`, never authored — the prototype
+      // hardcoded EXPIRED on the CSM badge, so a renewal meant editing markup.
+      // Education entries carry no pass/fail semantics and skip the badge.
+      const status = kind === "education" ? null : credentialStatus(expires);
+
+      // Two mono lines under the issuer, each omitted when it would be empty:
+      //   meta   — the dates, falling back to `note` when there are none
+      //            (Google SRE training has no issue date, just "Completed")
+      //   footer — credential id and verify link, falling back to `note` when
+      //            the dates already claimed the meta line
+      const dates = [
+        issued && `Issued ${formatMonth(issued)}`,
+        expires && `Expired ${formatMonth(expires)}`,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      const meta = dates || note;
+      const footer = dates && note ? note : undefined;
+
+      return (
+        <Card class="flex flex-col gap-1.5 p-[22px]">
+          <div class="flex items-start justify-between gap-3">
+            <div class="text-[17px] font-semibold">{name}</div>
+            {status && (
+              <span
+                class:list={[
+                  "flex-none rounded-full px-2.5 py-[3px] font-mono text-[11px] tracking-[0.08em]",
+                  status === "pass"
+                    ? "bg-pass-wash text-pass"
+                    : "bg-warn-wash text-warn",
+                ]}
+              >
+                {status === "pass" ? "PASS" : "EXPIRED"}
+              </span>
+            )}
+          </div>
+
+          <div class="text-ink-2 text-[15px]">{issuer}</div>
+
+          {meta && (
+            <div class="tabular text-ink-3 font-mono text-[13px]">{meta}</div>
+          )}
+
+          {/* TK fields: absent → nothing renders, never a dead link. */}
+          {(credentialId || verifyUrl || footer) && (
+            <div class="text-ink-4 font-mono text-xs">
+              {credentialId}
+              {credentialId && verifyUrl && " · "}
+              {verifyUrl && (
+                <a
+                  href={verifyUrl}
+                  target="_blank"
+                  rel="noopener"
+                  class="text-ink-4 hover:text-pass-press underline"
+                >
+                  Verify
+                </a>
+              )}
+              {!credentialId && !verifyUrl && footer}
+            </div>
+          )}
+        </Card>
+      );
+    })
+  }
+</div>

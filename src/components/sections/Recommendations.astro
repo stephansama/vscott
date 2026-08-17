@@ -1,0 +1,49 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import { formatLongDate } from "../../lib/dates";
+
+interface Props {
+  entries: CollectionEntry<"recommendations">[];
+}
+
+const { entries } = Astro.props;
+
+// The quote is the markdown body, so it renders through Astro's pipeline —
+// smart quotes and ellipses come out typographically correct.
+const rendered = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+  })),
+);
+---
+
+{
+  /*
+    min(320px,100%) rather than a bare 320px: auto-fit refuses to shrink a
+    column below its min, so a flat 320px overflows any narrower viewport.
+  */
+}
+<div
+  class="grid grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))] gap-4"
+>
+  {
+    rendered.map(({ entry, Content }) => (
+      <figure class="border-line bg-card shadow-card m-0 flex flex-col gap-4 rounded-[14px] border p-6">
+        <blockquote class="text-ink m-0 text-[17px] [&>p]:m-0">
+          <Content />
+        </blockquote>
+        <figcaption class="flex flex-col gap-0.5">
+          <span class="font-medium">{entry.data.author}</span>
+          <span class="text-ink-3 text-[13px]">{entry.data.authorTitle}</span>
+          <span class="tabular text-ink-4 font-mono text-xs">
+            {formatLongDate(entry.data.date)}
+          </span>
+          <span class="text-ink-4 font-mono text-[11px] tracking-[0.08em] uppercase">
+            {entry.data.relationship}
+          </span>
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>

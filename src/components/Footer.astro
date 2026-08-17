@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  profile: CollectionEntry<"profile">["data"];
+}
+
+const { profile } = Astro.props;
+
+/** "linkedin.com/in/vtscott" — the bare handle, as the prototype shows it. */
+const linkedinLabel = profile.linkedin.replace(/^https?:\/\//, "");
+---
+
+<footer class="border-line bg-bg-elev border-t">
+  <div
+    class="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-4 px-5 py-6"
+  >
+    <span class="text-ink-3 text-[13px]">
+      {profile.name} · {profile.location}
+    </span>
+    <a
+      href={profile.linkedin}
+      target="_blank"
+      rel="noopener"
+      class="text-ink-4 hover:text-ink-2 font-mono text-xs no-underline"
+    >
+      {linkedinLabel}
+    </a>
+  </div>
+</footer>

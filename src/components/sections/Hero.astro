@@ -1,0 +1,77 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import Icon from "../Icon.astro";
+
+interface Props {
+  profile: CollectionEntry<"profile">["data"];
+  /** mailto: when an email is confirmed, LinkedIn otherwise. */
+  contactHref: string;
+}
+
+const { profile, contactHref } = Astro.props;
+---
+
+<section
+  aria-label="Hero"
+  class="flex flex-wrap items-center gap-8 pt-14 pb-[72px]"
+>
+  <Image
+    src={profile.portrait}
+    alt={profile.portraitAlt}
+    width={224}
+    height={224}
+    densities={[1, 2]}
+    loading="eager"
+    fetchpriority="high"
+    class="border-line size-28 flex-none rounded-full border object-cover"
+  />
+
+  <div class="flex min-w-[280px] flex-1 flex-col gap-4">
+    <h1
+      class="m-0 text-[clamp(40px,7vw,64px)] leading-[1.05] font-bold tracking-[-0.03em]"
+    >
+      {profile.name}
+    </h1>
+
+    <p class="text-ink-2 m-0 max-w-[68ch] text-lg">{profile.tagline}</p>
+
+    {
+      /*
+        The prototype carried two mutually exclusive <sc-if> branches: an
+        "available" green-dot line and an amber "TK availability unconfirmed"
+        line. Unconfirmed content does not ship, so the fallback branch is
+        gone — when `available` is false this simply renders nothing.
+      */
+    }
+    {
+      profile.available && profile.availabilityNote && (
+        <div class="text-ink-2 flex flex-wrap items-center gap-2.5 text-[15px]">
+          <span
+            aria-hidden="true"
+            class="animate-pulse-dot bg-pass size-2 flex-none rounded-full"
+          />
+          <span>{profile.availabilityNote}</span>
+        </div>
+      )
+    }
+
+    <div class="mt-1 flex flex-wrap gap-3">
+      <a
+        href={contactHref}
+        class="bg-pass text-pass-ink hover:bg-pass-press hover:text-pass-ink inline-flex h-12 items-center justify-center rounded-[10px] px-[22px] text-base font-semibold no-underline"
+      >
+        Get in touch
+      </a>
+      <a
+        href={profile.linkedin}
+        target="_blank"
+        rel="noopener"
+        class="border-line-strong text-ink hover:border-ink-3 hover:text-ink inline-flex h-12 items-center justify-center gap-2 rounded-[10px] border px-[22px] text-base font-semibold no-underline"
+      >
+        <Icon pack="simple-icons" name="linkedin" size={17} />
+        View LinkedIn
+      </a>
+    </div>
+  </div>
+</section>

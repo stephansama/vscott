@@ -1,0 +1,171 @@
+---
+import { getImage } from "astro:assets";
+import { getCollection, getEntry } from "astro:content";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Icon from "../components/Icon.astro";
+import Section from "../components/Section.astro";
+import Certifications from "../components/sections/Certifications.astro";
+import Experience from "../components/sections/Experience.astro";
+import Hero from "../components/sections/Hero.astro";
+import Prose from "../components/sections/Prose.astro";
+import Recommendations from "../components/sections/Recommendations.astro";
+import Skills from "../components/sections/Skills.astro";
+import Base from "../layouts/Base.astro";
+import { buildPersonSchema } from "../lib/schema";
+
+const profileEntry = await getEntry("profile", "profile");
+const skillsEntry = await getEntry("skills", "skills");
+if (!profileEntry || !skillsEntry) {
+  throw new Error(
+    "Missing content/profile.json or content/skills.json — both are required.",
+  );
+}
+const profile = profileEntry.data;
+const skills = skillsEntry.data;
+
+const byOrderDesc = <T extends { data: { order: number } }>(a: T, b: T) =>
+  b.data.order - a.data.order;
+
+const experience = (await getCollection("experience")).sort(byOrderDesc);
+const certifications = (await getCollection("certifications")).sort(
+  byOrderDesc,
+);
+const recommendations = (await getCollection("recommendations")).sort(
+  byOrderDesc,
+);
+
+// Sections are keyed by anchor so each block pulls its own heading copy.
+const sections = Object.fromEntries(
+  (await getCollection("sections")).map((entry) => [entry.data.anchor, entry]),
+);
+
+/** The prototype's `contactHref`: mailto when confirmed, LinkedIn otherwise. */
+const contactHref = profile.email
+  ? `mailto:${profile.email}`
+  : profile.linkedin;
+
+const portrait = await getImage({
+  src: profile.portrait,
+  width: 400,
+  height: 400,
+  format: "png",
+});
+
+const personSchema = buildPersonSchema({
+  profile,
+  experience,
+  certifications,
+  skills,
+  siteUrl: Astro.site!.href,
+  imageUrl: new URL(portrait.src, Astro.site).href,
+});
+---
+
+<Base
+  title={profile.seo.title}
+  description={profile.seo.description}
+  schema={personSchema}
+>
+  <Header />
+
+  <main id="top" class="mx-auto max-w-[1080px] px-5">
+    <Hero profile={profile} contactHref={contactHref} />
+
+    <Section
+      id="about"
+      title={sections.about!.data.title}
+      number={sections.about!.data.number}
+      label="About"
+    >
+      <Prose entry={sections.about!} />
+    </Section>
+
+    <Section
+      id="experience"
+      title={sections.experience!.data.title}
+      number={sections.experience!.data.number}
+      label="Experience"
+      class="gap-8"
+    >
+      <Experience entries={experience} />
+    </Section>
+
+    <Section
+      id="skills"
+      title={sections.skills!.data.title}
+      number={sections.skills!.data.number}
+      label="Skills"
+    >
+      <Skills skills={skills} />
+    </Section>
+
+    <Section
+      id="certs"
+      title={sections.certs!.data.title}
+      number={sections.certs!.data.number}
+      label="Certifications and education"
+    >
+      <Certifications entries={certifications} />
+    </Section>
+
+    <Section
+      id="community"
+      title={sections.community!.data.title}
+      number={sections.community!.data.number}
+      label="Community"
+    >
+      <Prose entry={sections.community!} />
+    </Section>
+
+    <Section
+      id="recs"
+      title={sections.recs!.data.title}
+      number={sections.recs!.data.number}
+      label="Recommendations"
+      wide
+    >
+      <Recommendations entries={recommendations} />
+    </Section>
+
+    <Section
+      id="contact"
+      title={sections.contact!.data.title}
+      number={sections.contact!.data.number}
+      label="Contact"
+      class="pb-24"
+    >
+      <Prose entry={sections.contact!} />
+      <div class="flex flex-wrap gap-3">
+        {
+          profile.email && (
+            <a
+              href={`mailto:${profile.email}`}
+              class="bg-pass text-pass-ink hover:bg-pass-press hover:text-pass-ink inline-flex h-12 items-center justify-center gap-2 rounded-[10px] px-[22px] text-base font-semibold no-underline"
+            >
+              <Icon pack="ph" name="envelope-simple" size={18} />
+              Email {profile.shortName}
+            </a>
+          )
+        }
+        <a
+          href={profile.linkedin}
+          target="_blank"
+          rel="noopener"
+          class:list={[
+            "inline-flex h-12 items-center justify-center gap-2 rounded-[10px] px-[22px] text-base font-semibold no-underline",
+            // Demotes to the outline treatment once an email CTA exists.
+            profile.email
+              ? "border-line-strong text-ink hover:border-ink-3 hover:text-ink border"
+              : "bg-pass text-pass-ink hover:bg-pass-press hover:text-pass-ink",
+          ]}
+        >
+          <Icon pack="simple-icons" name="linkedin" size={17} />
+          Message on LinkedIn
+        </a>
+      </div>
+    </Section>
+  </main>
+
+  <Footer profile={profile} />
+</Base>

@@ -1,0 +1,17 @@
+diff --git a/dist/utilities-C4Go8fep.mjs b/dist/utilities-C4Go8fep.mjs
+index d739acf67360573af3779d87a2ef6f112b1fa139..119be887c9df9bc559161b3a9c5abc6eaa5f7c6a 100644
+--- a/dist/utilities-C4Go8fep.mjs
++++ b/dist/utilities-C4Go8fep.mjs
+@@ -7745,9 +7745,9 @@ function replaceIDs(body, prefix = randomPrefix) {
+ //#endregion
+ //#region src/utilities.ts
+ const regexes = {
+-	height: /height=\S+/,
+-	width: /width=\S+/,
+-	xml: /xmlns=\S+/
++	height: /height=\S+/g,
++	width: /width=\S+/g,
++	xml: /xmlns=\S+/g
+ };
+ function buildEnd(collections, usage, options) {
+ 	for (const pack of Object.keys(usage)) {

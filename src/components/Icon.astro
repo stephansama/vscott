@@ -1,0 +1,30 @@
+---
+// Build-time Iconify icon via @stephansama/astro-iconify-svgmap.
+// getIcon(pack, name) records usage and returns a "/{pack}.svg#{name}" sprite
+// reference; the integration generates the sprite (dev: middleware, build: dist).
+import { getIcon } from "@stephansama/astro-iconify-svgmap/get";
+
+interface Props {
+  pack: string;
+  name: string;
+  size?: number;
+  class?: string;
+  /** Accessible label. When omitted the icon is decorative (aria-hidden). */
+  label?: string;
+}
+
+const { pack, name, size = 16, class: className, label } = Astro.props;
+const href = await getIcon(pack, name);
+---
+
+<svg
+  width={size}
+  height={size}
+  class={className}
+  fill="currentColor"
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+>
+  <use href={href}></use>
+</svg>

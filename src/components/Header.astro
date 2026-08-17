@@ -1,0 +1,38 @@
+---
+import { getCollection } from "astro:content";
+import ThemeToggle from "./ThemeToggle.astro";
+
+// Nav is derived from the sections collection — flipping `inNav: true` in a
+// content file adds the link, with no edit here.
+const navItems = (await getCollection("sections"))
+  .filter((section) => section.data.inNav)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<header class="border-line bg-bg-elev sticky top-0 z-20 border-b">
+  <div
+    class="mx-auto flex h-14 max-w-[1080px] items-center justify-between gap-4 px-5"
+  >
+    <a
+      href="#top"
+      class="text-ink font-mono text-[13px] font-medium tracking-[0.02em] no-underline"
+    >
+      vscott<span class="text-pass">·</span>qe
+    </a>
+
+    <nav aria-label="Sections" class="hidden gap-[18px] text-[13px] sm:flex">
+      {
+        navItems.map((section) => (
+          <a
+            href={`#${section.data.anchor}`}
+            class="text-ink-2 hover:text-ink no-underline"
+          >
+            {section.data.title}
+          </a>
+        ))
+      }
+    </nav>
+
+    <ThemeToggle />
+  </div>
+</header>
