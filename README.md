@@ -88,6 +88,9 @@ Filling any of them in is a content edit; the corresponding UI appears
 automatically. Adding `email` to `profile.json`, for example, switches the
 contact CTAs from LinkedIn to a `mailto:` and adds an "Email Vernon" button.
 
+Outstanding _engineering_ work — as opposed to content — lives in
+[TODO.md](./TODO.md).
+
 ## Deployment
 
 Netlify, Git-based. Pushes to `main` deploy to production; every PR gets a
