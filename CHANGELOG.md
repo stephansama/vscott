@@ -1,3 +1,15 @@
+# v0.0.2 (Mon Aug 17 2026)
+
+#### 🐛 Bug Fix
+
+- docs: add TODO with Google Tag Manager as an item ([@stephansama](https://github.com/stephansama))
+
+#### Authors: 1
+
+- Stephan Randle ([@stephansama](https://github.com/stephansama))
+
+---
+
 # v0.0.1 (Mon Aug 17 2026)
 
 #### 🐛 Bug Fix
