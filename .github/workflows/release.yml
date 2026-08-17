@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DO_NOT_TRACK: 1
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+# Never let two releases race for the same tag.
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # auto reads the full commit history to work out the next version
+          # from conventional-commit prefixes, so a shallow clone breaks it.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: 📦 Installing dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔍 Typecheck
+        run: pnpm check
+
+      - name: 🧹 Lint
+        run: pnpm lint
+
+      # Building before the tag means a broken tree never gets released.
+      - name: 🏗️ Build
+        run: pnpm build
+
+      # Idempotent, and makes the repo self-configuring — auto's labels drive
+      # the changelog sections and have not been created on this repo yet.
+      - name: 🏷️ Sync release labels
+        run: pnpm exec auto create-labels
+
+      - name: ↗️ Create release
+        run: pnpm run release

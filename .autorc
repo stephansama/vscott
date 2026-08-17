@@ -1,0 +1,10 @@
+{
+	"plugins": [
+		"git-tag",
+		["conventional-commits", { "defaultReleaseType": "patch" }]
+	],
+	"owner": "stephansama",
+	"repo": "vscott",
+	"name": "Stephan Randle",
+	"email": "stephanrandle@hotmail.com"
+}
